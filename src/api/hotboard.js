@@ -47,12 +47,19 @@ function formatHeat(raw) {
  * 格式化单条热点
  */
 function formatHotItem(item, index) {
+  // 热度值优先级：extra.view_count > hot_value
+  const rawHeat = item.extra?.view_count || item.hot_value;
+
+  // 标签：仅取有意义的文字标签（非数字ID），微博的 tag/抖音的 label 是数字时不展示
+  const rawTag = item.extra?.tag || item.extra?.label || null;
+  const tag = rawTag && isNaN(Number(rawTag)) ? String(rawTag) : null;
+
   return {
     rank: item.index || (index + 1),
     title: item.title || '（无标题）',
-    hotValue: formatHeat(item.hot_value),
-    rawHotValue: item.hot_value,
-    tag: item.extra?.tag || item.extra?.label || null,
+    hotValue: formatHeat(rawHeat),
+    rawHotValue: rawHeat,
+    tag,
     url: item.url || '',
   };
 }
